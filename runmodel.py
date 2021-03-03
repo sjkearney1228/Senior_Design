@@ -7,9 +7,9 @@ Original file is located at
     https://colab.research.google.com/drive/1UpJ-jEAzRAlymcghxqy9MknSNk90vsPa
 """
 
-import keras
 import h5py
 import numpy as np
+import keras
 from keras.models import model_from_json
 # load json and create model
 json_file = open('model.json', 'r')
