@@ -13,13 +13,17 @@ import h5py
 import numpy as np
 import keras
 from keras.models import model_from_json
+
+def runmodel(x,y):
 # load json and create model
-json_file = open('model.json', 'r')
+#json_file = open('model.json', 'r')
+json_file = open(x, 'r')
 loaded_model_json = json_file.read()
 json_file.close()
 loaded_model = model_from_json(loaded_model_json)
 # load weights into new model
-loaded_model.load_weights("model.h5")
+#loaded_model.load_weights("model.h5")
+loaded_model.load_weights(y)
 print("Loaded model from disk")
 
 #load dataset
