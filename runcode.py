@@ -64,6 +64,9 @@ def runmodel(data):
 	preds = loaded_model.evaluate(X_test1, Y_test1)
 	print ("Loss = " + str(preds[0]))
 	print ("Test Accuracy = " + str(preds[1]))
+	out = preds[1];
+	
+	return out
 	
 def main():
 	#Open Data save in file
@@ -114,6 +117,9 @@ def main():
 	plt.tight_layout()
 	plt.savefig("tmp.png")
 	plt.show()
+	
+	result_ = runmodel()
+	print
 
 if __name__ == "__main__":
     
