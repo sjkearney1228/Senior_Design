@@ -1,0 +1,93 @@
+import os
+import tensorflow.keras
+
+import cv2
+import glob
+import os
+import numpy as np
+from keras.utils import to_categorical
+
+import keras
+import h5py
+from keras.models import model_from_json
+
+# load json and create model
+#json_file = open('model.json', 'r')
+json_file = open('CAE.json', 'r')
+loaded_model_json = json_file.read()
+json_file.close()
+loaded_model = model_from_json(loaded_model_json)
+# load weights into new model
+#loaded_model.load_weights("model.h5")
+loaded_model.load_weights("CAE_weight.h5")
+print("Loaded model from disk")
+
+# Load single data file
+np.random.seed(1)
+X_data = []
+files = sorted(glob.glob ('/content/gdrive/MyDrive/ColabNotebooks/Test_spectrogram/*/*.png'))
+for myFile in files:
+  print(myFile)
+  image = cv2.imread(myFile)
+  image = cv2.resize(image, (128,128), interpolation = cv2.INTER_AREA)
+  X_data.append (image)
+print('X_data shape:', np.array(X_data).shape)
+mypath='/content/gdrive/MyDrive/ColabNotebooks/Test_spectrogram/'
+arr = sorted(os.listdir(mypath))
+dir_arr=['/' + s + '/' for s in arr]
+labels = []
+for i in files:
+    res1 = [ele for ele in dir_arr if(ele in i)]
+    res  = res1[0][1:-1]
+    if res =='05_Walking_towards_radar':
+        labels.append(0)
+    elif res =='06_walking_away_from_Radar':
+        labels.append(1)
+    elif res =='07_picking_up_an_object':
+        labels.append(2)
+    elif res =='08_bending':
+        labels.append(3)
+    elif res =='09_sitting':
+        labels.append(4)
+    elif res =='10_kneeling':
+        labels.append(5)
+    elif res =='11_crawling':
+        labels.append(6)
+    elif res =='16_Walking_on_both_toes':
+        labels.append(7)
+    elif res =='17_limping_with_RL_Stiff':
+        labels.append(8)
+    elif res =='18_short_steps':
+        labels.append(9)
+    elif res =='19_scissors_gait':
+        labels.append(10)
+X_test=np.array(X_data)
+y_test=np.array(labels)
+import keras
+X_test = X_test/255.
+Y_test = keras.utils.to_categorical(y_test)
+print ("number of test examples = " + str(X_test.shape[0]))
+print ("X_test shape: " + str(X_test.shape))
+print ("Y_test shape: " + str(Y_test.shape))
+
+# Evaluate Model
+from keras import optimizers
+LEARNING_RATE = 1e-4
+# evaluate loaded model on test data
+loaded_model.compile(loss='binary_crossentropy', optimizer=optimizers.Adam(lr=LEARNING_RATE), metrics=['categorical_accuracy'])
+preds = loaded_model.predict(X_test)
+motion_class = np.argmax(preds,axis=1)
+print(motion_class)
+
+if motion_class == [0]: print("Walking towards radar")
+elif motion_class == [1]: print("Walking away from radar")
+elif motion_class == [2]: print("Picking up an Object")
+elif motion_class == [3]: print("Bending")
+elif motion_class == [4]: print("Sitting")
+elif motion_class == [5]: print("Kneeling")
+elif motion_class == [6]: print("Crawling")
+elif motion_class == [7]: print("Walking on both toes")
+elif motion_class == [8]: print("Limping with RL stiff")
+elif motion_class == [9]: print("Short steps")
+elif motion_class == [10]: print("Scissor Gait")
+
